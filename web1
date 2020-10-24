@@ -1,0 +1,302 @@
+Зубов Иван 
+Группа - РИ-380013
+ОТЧЁТ ПО ПРАКТИЧЕСКОЙ РАБОТЕ
+«Работа с протоколом HTTP через telnet»
+Задание №1
+Задание:
+
+Создать проект со следующей структурой:
+
+myproject/
+
+├── about
+
+│ └── aboutme.html
+
+└── index.html
+
+В файле index.html написать 2 ссылки с прямым и абсолютным обращением к aboutme.html. В файле aboutme.html создать такие же ссылки на файл index.html.
+
+Для этого необходимо выполнить следующие команды:
+
+1. mkdir myproject # создание директории
+
+2. cd myproject # перемещение в директорию
+
+3. mkdir about # cоздание директории
+
+4. cd about # перемещение в директорию
+
+5. touch aboutme.html # создание файла
+
+6. cd .. # Возвращаемся в предыдущую директорию
+
+7. touch index.html # создаем файл
+
+Следующим пунктом создаем абсолютные и относительные ссылки друг на друга:
+Файл index.html:
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Главная страница</title>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+	<meta name="generator" content="Geany 1.32" />
+</head>
+<body>
+	<a href="C:\Users\User\Desktop\проект\web1lab\about\aboutme.html">
+	</a><br>
+	<a href="about\aboutme.html">
+	</a>
+</body>
+</html>
+
+Ссылки работают, и открывается пока пустой aboutme.html. Заполним его:
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Обо мне</title>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+	<meta name="generator" content="Geany 1.32" />
+</head>
+<body>
+<a href="C:\Users\User\Desktop\проект\web1lab\index.html"">
+	</a><br>
+	<a href="..\index.html">
+	</a>
+</body>
+</html>
+
+Задание №2
+Задание:
+
+Подключиться по telnet к http://wikipedia.org и отправить запрос, проанализировать ответ сервера. Описать работу HTTP протокола в данном случае.
+Для этого необходимо в терминале набрать следующую команду:
+1. telnet wikipedia.org 80 # 
+Далее ввести следующее:
+2. GET /wiki/Main_Page HTTP/1.1 
+3. Host: en.wikipedia.org 
+4. User-Agent: Mozilla/5.0 (X11; U; Linux i686; ru; rv:1.9b5) Gecko/2008050509 Firefox/3.0b5
+5. Accept: text/html 
+6. Connection: close 
+В результате получаем код состояния 301 (редирект по пути https://en.wikipedia.org/wiki/Main_Pag)
+
+Задание №3
+Задание:
+Отправить запросы на http://httpbin.org, проанализировать ответ и код состояния. Описать работу HTTP протокола в каждом запросе.
+
+1. Запрашиваем данные GET запросом
+
+Нужно выполнить команду telnet httpbin.org 80 # мы устанавливаем соединение с сервером
+
+Далее нужно выполнить команды:
+GET /ip HTTP/1.1 
+Host: httpbin.org 
+Accept: */* 
+Результат – код 200 и запрос вернул информацию о внешнем ip адресе.
+
+Trying 52.6.34.179...
+Connected to httpbin.org.
+Escape character is '*]'.
+GET /ip HTTP/1.1
+Host: httpbin.org
+Accept: */*
+HTTP/1.1 200 OK
+Date: Sat, 24 Oct 2020 10:19:43 GMT
+Content-Type: application/json
+Content-Length: 30
+Connection: keep-alive
+Server: gunicorn/19.9.0
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Credentials: true
+{
+"origin": "94.140.142.54"
+}
+
+2. Выполняем запрос методом GET
+Нужно снова выполнить команду telnet httpbin.org 80. Далее вводим:
+GET /get?foo=bar&1=2&2/0&error=True HTTP/1.1
+Host: httpbin.org
+Accept: */*
+HTTP/1.1 200 OK
+Date: Sat, 24 Oct 2020 10:37:19 GMT
+Content-Type: application/json
+Content-Length: 323
+Connection: keep-alive
+Server: gunicorn/19.9.0
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Credentials: true
+
+{
+  "args": {
+    "1": "2", 
+    "2/0": "", 
+    "error": "True", 
+    "foo": "bar"
+  }, 
+  "headers": {
+    "Accept": "*/*", 
+    "Host": "httpbin.org", 
+    "X-Amzn-Trace-Id": "Root=1-5f8b1a60-69435de357fd178b7710853b"
+  }, 
+  "origin": "94.140.142.54", 
+  "url": "http://httpbin.org/get?foo=bar&1=2&2%2F0&error=True"
+}
+
+3.	Выполним запрос методом POST
+
+POST /post HTTP/1.1
+Host: httpbin.org
+Accept: */*
+Content-Length: 29 # длина передаваемого контента
+Content-Type: application/x-www-form-urlencoded # тип отправляемых данных
+
+Результат – код 200. Информация занеслась в поле Form.
+
+POST /post HTTP/1.1
+Host: httpbin.org
+Accept: */*
+Content-Length: 29
+Content-Type: application/x-www-form-urlencoded
+
+foo=bar&1=2&2%2F0=&error=True
+	Ответ:
+HTTP/1.1 200 OK
+Date: Sat, 24 Oct 2020 11:11:37 GMT
+Content-Type: application/json
+Content-Length: 444
+Connection: keep-alive
+Server: gunicorn/19.9.0
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Credentials: true
+
+{
+  "args": {}, 
+  "data": "", 
+  "files": {}, 
+  "form": {
+    "1": "2", 
+    "2/0": "", 
+    "error": "Tru", 
+    "foo": "bar"
+  }, 
+  "headers": {
+    "Accept": "*/*", 
+    "Content-Length": "29", 
+    "Content-Type": "application/x-www-form-urlencoded", 
+    "Host": "httpbin.org", 
+    "X-Amzn-Trace-Id": "Root=1-5f8b21e9-72fea203637e340f064b28d3"
+  }, 
+  "json": null, 
+  "origin": "94.140.142.54", 
+  "url": "http://httpbin.org/post"
+}
+
+При неверном значении длины, мы получаем неверные данные: 
+HTTP/1.1 400 Bad Request
+Server: awselb/2.0
+Date: Sat, 24 Oct 2020 11:31:50 GMT
+Content-Type: text/html
+Content-Length: 122
+Connection: close
+
+<html>
+<head><title>400 Bad Request</title></head>
+<body>
+<center><h1>400 Bad Request</h1></center>
+</body>
+</html>
+Connection closed by foreign host.
+
+4.	Запрос на установку Cookie 
+
+Первую команду оставляем. Добавляем запрос: 
+
+GET /cookies/set?country=Ru HTTP/1.1
+Host: httpbin.org
+Accept: */*
+Результат – перенаправление на другую страницу:
+
+HTTP/1.1 302 FOUND
+Date: Sat, 24 Oct 2020 11:36:21 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 223
+Connection: keep-alive
+Server: gunicorn/19.9.0
+Location: /cookies
+Set-Cookie: country=Ru; Path=/
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Credentials: true
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<title>Redirecting...</title>
+<h1>Redirecting...</h1>
+<p>You should be redirected automatically to target URL: <a href="/cookies">/cookies</a>.  If not click the link.
+
+5.	Просмотр установленных Cookie 
+
+Вводим команду: 
+GET /cookies HTTP/1.1
+Host: httpbin.org
+Accept: */*
+
+GET /cookies HTTP/1.1
+Host: httpbin.org
+Accept: */*
+Был получен следующий ответ:
+GET /cookies HTTP/1.1
+Host: httpbin.org
+Accept: */*
+
+HTTP/1.1 200 OK
+Sat, 24 Oct 2020 11:35:42 
+GMTContent-Type: application/json
+Content-Type: application/json
+Content-Length: 20
+Connection: keep-alive
+Server: gunicorn/19.9.0
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Credentials: true
+
+{
+  "cookies": {}
+}
+
+ 6. Отправить запрос на страницу с перенаправлением 
+
+/redirect
+GET /redirect/4 HTTP/1.1
+Host: httpbin.org
+Accept: */*
+Проверить глубину рекурсии в браузере, сравниь со значением опции network.http.redirection-limit из about:config в браузере FireFox.
+Сервис недоступен
+Ответ в телнете: 
+HTTP/1.1 404 Not Found
+Server: awselb/2.0
+Date: Sat, 24 Oct 2020 11:38:26 GMT
+Content-Type: text/plain; charset=utf-8
+Content-Length: 0
+Connection: keep-alive
+
+Веб-версия так же выдает 404 ошибку для всех параметров запроса на /redirect:
+
+Задание 4
+
+Работа с протоколом HTTP через telnet
+
+1. Нужно создать HTML форму c action="http://httpbin.org/post" method="POST" и enctype="multipart/form-data". 
+Добавить в форму поля firstname, lastname, group, message (textarea), myimg (file). Проверить результат отправки данных формы. 
+Проанализировать ответ. Описать работу HTTP протокола в данном случае
+<meta charset="utf-8“>
+<form enctype="multipart/form-data" action="http://httpbin.org/post" method="post" 
+<p><b>Contact Information:</bx/p>
+<p>First name: <textarea rows="l" cols="20" name="firsname"x/textareax/p>
+<p>last name: <textarea rows="l" cols=“20" name="lastname"x/textareax/p>
+<p>Your Group: <textarea rows=”l" cols=H20“ name="group"x/textareax/p>
+<p>Type a message: <textarea rows=“l" cols="20" name="message"x/textarea> 
+<p>input type="submit" value="Send"></p>
+<p><input type="file" 
+id="avatar" name="avatar"
+accept="image/png, image/jpeg">
+</form>
+
+Получившаяся форма:https://drive.google.com/file/d/13zrNmVPmkdYSwUT8YXI67d5zG4IN4pwp/view?usp=sharing
